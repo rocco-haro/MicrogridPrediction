@@ -102,6 +102,7 @@ class Model():
         softmax_w = tf.get_variable("softmax_w", [hidden_size, num_classes])
         softmax_b = tf.get_variable("softmax_b", [num_classes])
       logits = tf.nn.xw_plus_b(output, softmax_w, softmax_b)
+      self.prediction = logits
     #  print("*** In model: logits: ", logits)
       #Use sparse Softmax because we have mutually exclusive classes
       loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits,labels=self.labels,name = 'softmax')
@@ -109,6 +110,7 @@ class Model():
       self.cost = tf.reduce_sum(loss) / self.batch_size
     with tf.name_scope("Evaluating_accuracy") as scope:
       correct_prediction = tf.equal(tf.argmax(logits,1),self.labels)
+
       self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
       h1 = tf.summary.scalar('accuracy',self.accuracy)
     #  print("*** In model: h1: ", h1)

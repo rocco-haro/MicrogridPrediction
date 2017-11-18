@@ -3,6 +3,13 @@ Controller for LSTM_Model
 
 This controller acts as an API to the LSTM model.
 Full lstm Hyperparamaters and data source configuration is featured below.
+
+Using tensorflow v1.1
+
+# Ubuntu/Linux 64-bit, CPU only, Python 3.5
+$ export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.1.0-cp35-cp35m-linux_x86_64.whl
+# Python 3
+$ sudo pip3 install $TF_BINARY_URL
 """
 
 import numpy as np
@@ -118,9 +125,10 @@ class control_LSTM(object):
             if i%100 == 1:
             #Evaluate validation performance
               X_batch, y_batch = sample_batch(self.data['X_val'],self.data['y_val'],self.configLSTM['batch_size'])
-              cost_val, summ,acc_val = sess.run([model.cost,model.merged,model.accuracy],feed_dict = {model.input: X_batch, model.labels: y_batch, model.keep_prob:1.0})
+              cost_val, summ,acc_val, predictions = sess.run([model.cost,model.merged,model.accuracy, model.prediction],feed_dict = {model.input: X_batch, model.labels: y_batch, model.keep_prob:1.0})
               print('At %5.0f/%5.0f: COST %5.3f/%5.3f(%5.3f) -- Acc %5.3f/%5.3f(%5.3f)' %(i,self.configPrep['max_iterations'],cost_train,cost_val,cost_train_ma,acc_train,acc_val,acc_train_ma))
               #Write information to TensorBoard
+              print("Predictions: ", predictions)
               writer.add_summary(summ, i)
               writer.flush()
         except KeyboardInterrupt:
